@@ -28,19 +28,6 @@ bool verifCaseEstPasVide(int **plateau, joueur j){
     return false;
 }
 
-void priseSimple(int **plateau, joueur j){
-    if (j.choix_ligne == 0)
-    {
-        if(verifCaseEstPasVide(plateau,j)){
-            int x = plateau[j.choix_ligne][j.choix_colonne];
-            plateau[j.choix_ligne][j.choix_colonne] = 0;
-            
-            
-        }
-    }
-    
-}
-
 void affichePlateau(int **plateau){
     for(int i = 0; i < ligne; i++){
         for (int j = 0; j < colonne; j++)
@@ -51,6 +38,47 @@ void affichePlateau(int **plateau){
     }
 }
 
+void priseSimple(int **plateau, joueur j){
+    int l = j.choix_ligne;
+    int c = j.choix_colonne;    
+    if(l == 1 && verifCaseEstPasVide(plateau,j)){
+        int x = plateau[l][c];
+        plateau[l][c] = 0;
+        c++;
+         
+        if (l == 1 && c < colonne){   
+            while(c < colonne && x != 0)
+            {
+                printf("Dans le if avec i : %d et x : %d\n", c,x);
+                plateau[l][c]++;
+                x--;
+                affichePlateau(plateau);
+                printf("\n");
+                c++; 
+            }
+        }
+        if(l == 1 && c >= colonne){
+            l--;
+            while (c > 0 && x !=0)
+            {
+                c--;
+                printf("Dans le else avec i : %d\n", c);
+                plateau[l][c]++;
+                x--;
+                affichePlateau(plateau);
+                printf("\n"); 
+            }   
+        } 
+        if (plateau[l][c] == 1 || plateau[l][c] == 2)
+        {
+            j.nb_graine = j.nb_graine + plateau[l][c];
+        }            
+    }
+    
+}
+
+
+
 
     
  
@@ -59,8 +87,6 @@ int main(void){
     /* Créer les 2 Joueurs */
     joueur j1;
     joueur j2;
-    int x;
-
     printf("Bienvenu ! Vous allez jouer au Jeu-Awale ! \n");
     /* Création du Joueur 1 */
     printf("Joueur 1 -> Veuillez saisir votre prenom : ");
@@ -72,12 +98,11 @@ int main(void){
     {
         printf("\n%s -> Veuillez ressaisir votre côté en saisissant 0 ou 1 : ", j1.prenom);
         scanf("%d", &j1.choix_ligne);
-        x = j1.choix_ligne;
     }
     /* Création du Joueur 2 */
     printf("\nJoueur 2 -> Veuillez saisir votre prenom : ");
     scanf("%s", j2.prenom);
-    if (x == 1)
+    if (j1.choix_ligne == 1)
     {
         j2.choix_ligne = 0;
     }else
@@ -86,7 +111,7 @@ int main(void){
     }
     printf("\n%s -> Vous avez le côté : %d ", j2.prenom,j2.choix_ligne);
 
- 
+
     /* Creer le plateau */
     int **plateau = (int**) malloc(ligne * sizeof(int*));
     for(int i = 0; i < ligne; i++){
@@ -97,8 +122,15 @@ int main(void){
         }
     }
 
-    // affichePlateau(plateau);
+    /* Choisir la colonne */
+    printf("\n%s -> Veuillez la case que vous voulez déplcer en saisissant le numColonne : ", j1.prenom);
+    scanf("%d", &j1.choix_colonne);
+    priseSimple(plateau,j1);
+    printf("\n%s -> Veuillez la case que vous voulez déplcer en saisissant le numColonne : ", j1.prenom);
+    scanf("%d", &j1.choix_colonne);
+    priseSimple(plateau,j1);
+    printf("\n%s -> Veuillez la case que vous voulez déplcer en saisissant le numColonne : ", j1.prenom);
+    scanf("%d", &j1.choix_colonne);
+    priseSimple(plateau,j1);
 
-
-     
 }
