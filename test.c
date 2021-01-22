@@ -107,7 +107,7 @@ void priseSimple(int **plateau, joueur j){
                     }else{
                         printf("l : %d c : %d et x : %d\n",l,c,x);
                         plateau[l][c]++;
-                        c--;
+                        c--; 
                         x--;
                         affichePlateau(plateau);
                         printf("\n"); 
@@ -116,7 +116,7 @@ void priseSimple(int **plateau, joueur j){
             }
             if(l == 0 && c < 0){
                 l = 1;
-                c++;    
+                c++; // lorsque la c = -1 c'est impossible parce qu'il y a pas d'indice -1 du coup tu fais c++ -> p[1][0]    
             }
         }
         if (plateau[l][c] == 1 || plateau[l][c] == 2)
@@ -192,3 +192,5 @@ int main(void){
     }
 
 }
+
+// faire une function bool PartieFinie
