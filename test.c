@@ -14,7 +14,7 @@ struct joueur
 typedef struct joueur joueur;
 
 bool verifSaisieCase(joueur j){
-    if (j.choix_colonne >= 0 && j.choix_colonne <= colonne)
+    if (j.choix_colonne >= 0 && j.choix_colonne < colonne)
     {
         return true;
     }
@@ -38,43 +38,102 @@ void affichePlateau(int **plateau){
     }
 }
 
+bool estCaseDepart(joueur j, int l, int c){
+    if (l == j.choix_ligne && c == j.choix_colonne)
+    {
+        return true;
+    }
+    return false;
+}
+
+joueur changeJoueur(joueur j, joueur j1, joueur j2){
+    if (j.choix_ligne == j1.choix_ligne)
+    {
+        return j2;
+    }else
+    {
+        return j1;
+    }
+}
+
+
+
 void priseSimple(int **plateau, joueur j){
     int l = j.choix_ligne;
-    int c = j.choix_colonne;    
-    if(l == 1 && verifCaseEstPasVide(plateau,j)){
+    int c = j.choix_colonne;
+    j.nb_graine = 0;    
+    if(verifCaseEstPasVide(plateau,j)){
         int x = plateau[l][c];
         plateau[l][c] = 0;
-        c++;
-         
-        if (l == 1 && c < colonne){   
-            while(c < colonne && x != 0)
-            {
-                printf("Dans le if avec i : %d et x : %d\n", c,x);
-                plateau[l][c]++;
-                x--;
-                affichePlateau(plateau);
-                printf("\n");
-                c++; 
+        if (l == 1)
+        {
+            c++;
+        }else
+        {
+            c--;
+        }
+        
+        while (x != 0)
+        {        
+            if (l == 1 && c < colonne){   
+                while(c < colonne && x != 0)
+                {
+                    if (estCaseDepart(j,l,c))
+                    {
+                        c++;
+                    }else
+                    {
+                        printf("l : %d c : %d et x : %d\n",l,c,x);
+                        plateau[l][c]++;
+                        x--;
+                        affichePlateau(plateau);
+                        printf("\n");
+                        c++;   
+                    }
+                    
+                }
+            }
+            if(l == 1 && c >= colonne){
+                l = 0;
+                c--; 
+            }
+            // ca commence ici le probleme !
+            if(l == 0 && c < colonne){
+                while (c >= 0 && x != 0) // revoir cette ligne probleme au niveau du comptage !! 
+                {   
+                    if (estCaseDepart(j,l,c))
+                    {
+                        c--;
+                    }else{
+                        printf("l : %d c : %d et x : %d\n",l,c,x);
+                        plateau[l][c]++;
+                        c--;
+                        x--;
+                        affichePlateau(plateau);
+                        printf("\n"); 
+                    }
+                }   
+            }
+            if(l == 0 && c < 0){
+                l = 1;
+                c++;    
             }
         }
-        if(l == 1 && c >= colonne){
-            l--;
-            while (c > 0 && x !=0)
-            {
-                c--;
-                printf("Dans le else avec i : %d\n", c);
-                plateau[l][c]++;
-                x--;
-                affichePlateau(plateau);
-                printf("\n"); 
-            }   
-        } 
         if (plateau[l][c] == 1 || plateau[l][c] == 2)
         {
-            j.nb_graine = j.nb_graine + plateau[l][c];
-        }            
+            int v = plateau[l][c];
+            j.nb_graine = j.nb_graine + v;
+            plateau[l][c] = 0;
+            printf("\nligne : %d, colonne : %d",l,c);
+            printf("\ncase final : %d",plateau[l][c]);
+            printf("\npoints : %d\n",j.nb_graine);
+            affichePlateau(plateau);
+        } 
+
+    }else
+    {
+        printf("La case saisie est invalide !! ");
     }
-    
 }
 
 
@@ -92,7 +151,7 @@ int main(void){
     printf("Joueur 1 -> Veuillez saisir votre prenom : ");
     scanf("%s", j1.prenom);
     printf("\n%s -> Veuillez saisir votre côté en saisissant 0 ou 1 : ", j1.prenom);
-    printf("\n%s -> Attention si 0 est votre choix vous commencerai : ", j1.prenom);
+    printf("\n%s -> Attention si 0 est votre choix vous commencerez : ", j1.prenom);
     scanf("%d", &j1.choix_ligne);
     while (j1.choix_ligne != 0 && j1.choix_ligne != 1)
     {
@@ -122,15 +181,14 @@ int main(void){
         }
     }
 
+    joueur j = j1; // intialisation du joueur 1 par default
     /* Choisir la colonne */
-    printf("\n%s -> Veuillez la case que vous voulez déplcer en saisissant le numColonne : ", j1.prenom);
-    scanf("%d", &j1.choix_colonne);
-    priseSimple(plateau,j1);
-    printf("\n%s -> Veuillez la case que vous voulez déplcer en saisissant le numColonne : ", j1.prenom);
-    scanf("%d", &j1.choix_colonne);
-    priseSimple(plateau,j1);
-    printf("\n%s -> Veuillez la case que vous voulez déplcer en saisissant le numColonne : ", j1.prenom);
-    scanf("%d", &j1.choix_colonne);
-    priseSimple(plateau,j1);
+    for (int y = 0; y < 50; y++)
+    {
+        printf("\n%s -> Veuillez choisir la case que vous voulez déplcer en saisissant le numColonne : ", j.prenom);
+        scanf("%d", &j.choix_colonne);
+        priseSimple(plateau,j);
+        j = changeJoueur(j,j1,j2);
+    }
 
 }
