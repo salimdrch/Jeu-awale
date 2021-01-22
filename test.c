@@ -49,9 +49,13 @@ bool estCaseDepart(joueur j, int l, int c){
 joueur changeJoueur(joueur j, joueur j1, joueur j2){
     if (j.choix_ligne == j1.choix_ligne)
     {
+        j.nb_graine = 3;
+        j1.nb_graine = j.nb_graine;
         return j2;
     }else
     {
+        j.nb_graine = 3;
+        j2.nb_graine = j.nb_graine;
         return j1;
     }
 }
@@ -61,7 +65,7 @@ joueur changeJoueur(joueur j, joueur j1, joueur j2){
 void priseSimple(int **plateau, joueur j){
     int l = j.choix_ligne;
     int c = j.choix_colonne;
-    j.nb_graine = 0;    
+    int d = 0;    
     if(verifCaseEstPasVide(plateau,j)){
         int x = plateau[l][c];
         plateau[l][c] = 0;
@@ -85,10 +89,11 @@ void priseSimple(int **plateau, joueur j){
                     {
                         printf("l : %d c : %d et x : %d\n",l,c,x);
                         plateau[l][c]++;
+                        d = c;
                         x--;
+                        c++;
                         affichePlateau(plateau);
-                        printf("\n");
-                        c++;   
+                        printf("\n");   
                     }
                     
                 }
@@ -107,6 +112,7 @@ void priseSimple(int **plateau, joueur j){
                     }else{
                         printf("l : %d c : %d et x : %d\n",l,c,x);
                         plateau[l][c]++;
+                        d = c;
                         c--; 
                         x--;
                         affichePlateau(plateau);
@@ -118,18 +124,18 @@ void priseSimple(int **plateau, joueur j){
                 l = 1;
                 c++; // lorsque la c = -1 c'est impossible parce qu'il y a pas d'indice -1 du coup tu fais c++ -> p[1][0]    
             }
+            affichePlateau(plateau);
         }
-        if (plateau[l][c] == 1 || plateau[l][c] == 2)
+        if (plateau[l][d] == 1 || plateau[l][d] == 2)
         {
-            int v = plateau[l][c];
+            int v = plateau[l][d];
             j.nb_graine = j.nb_graine + v;
-            plateau[l][c] = 0;
-            printf("\nligne : %d, colonne : %d",l,c);
-            printf("\ncase final : %d",plateau[l][c]);
+            plateau[l][d] = 0;
+            printf("\nligne : %d, colonne : %d",l,d);
+            printf("\ncase final : %d",plateau[l][d]);
             printf("\npoints : %d\n",j.nb_graine);
             affichePlateau(plateau);
         } 
-
     }else
     {
         printf("La case saisie est invalide !! ");
@@ -146,6 +152,8 @@ int main(void){
     /* Créer les 2 Joueurs */
     joueur j1;
     joueur j2;
+    j1.nb_graine = 0;
+    j2.nb_graine = 0;
     printf("Bienvenu ! Vous allez jouer au Jeu-Awale ! \n");
     /* Création du Joueur 1 */
     printf("Joueur 1 -> Veuillez saisir votre prenom : ");
@@ -181,16 +189,35 @@ int main(void){
         }
     }
 
-    joueur j = j1; // intialisation du joueur 1 par default
+    int j;
+    if (j1.choix_ligne == 1)
+    {
+        j = 2;
+    }else
+    {
+        j = 1;
+    }
+           
     /* Choisir la colonne */
+
     for (int y = 0; y < 50; y++)
     {
-        printf("\n%s -> Veuillez choisir la case que vous voulez déplcer en saisissant le numColonne : ", j.prenom);
-        scanf("%d", &j.choix_colonne);
-        priseSimple(plateau,j);
-        j = changeJoueur(j,j1,j2);
-    }
+        if (j == 1)
+        {
+            printf("\n%s -> Veuillez choisir la case que vous voulez déplcer en saisissant le numColonne : ", j1.prenom);
+            scanf("%d", &j1.choix_colonne);
+            priseSimple(plateau,j1);
+            printf("\n%s -> score : %d",j1.prenom,j1.nb_graine);
+            j++;
+        }else
+        {
+            printf("\n%s -> Veuillez choisir la case que vous voulez déplcer en saisissant le numColonne : ", j2.prenom);
+            scanf("%d", &j2.choix_colonne);
+            priseSimple(plateau,j2);
+            printf("\n%s -> score : %d",j2.prenom,j2.nb_graine);
+            j--;
+        }
+   }
 
 }
-
 // faire une function bool PartieFinie
